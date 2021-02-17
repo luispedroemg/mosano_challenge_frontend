@@ -10,7 +10,8 @@ function handleErrors(response, errorCallback) {
 }
 
 function getCountryList(responseCallback, errorCallback) {
-  fetch('http://localhost:3001/countries')
+  console.log(process.env.REACT_APP_API_URL);
+  fetch(`${process.env.REACT_APP_API_URL}/countries`)
     .then((response) => {
       response.json().then((countries) => {
         responseCallback(countries);
@@ -19,7 +20,7 @@ function getCountryList(responseCallback, errorCallback) {
 }
 
 function getUserList(responseCallback, errorCallback) {
-  fetch('http://localhost:3001/users')
+  fetch(`${process.env.REACT_APP_API_URL}/users`)
     .then((usersResponse) => usersResponse.json(), (err) => errorCallback([{ error: 'frontend', msg: `Error fetching country list json:${err}` }]))
     .then((data) => responseCallback(data), (err) => errorCallback([{ error: 'frontend', msg: `Error fetching country list json:${err}` }]));
 }
@@ -33,7 +34,7 @@ function postUser(userData, responseCallback, errorCallback, apiCreds) {
     },
     body: JSON.stringify(userData),
   };
-  fetch('http://localhost:3001/users', requestOptions)
+  fetch(`${process.env.REACT_APP_API_URL}/users`, requestOptions)
     .then((response) => {
       if (hasErrors(response)) {
         handleErrors(response, errorCallback);
