@@ -1,0 +1,37 @@
+.userForm{
+    color: dodgerblue;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 100%;
+    margin: 2%;
+}
+
+.userFormInput{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.userForm input{
+    color: dodgerblue;
+    border: 1px dodgerblue solid;
+    margin-bottom: 1%;
+    min-width: 70%;
+}
+
+.userForm select{
+    color: dodgerblue;
+    border: 1px dodgerblue solid;
+    margin-bottom: 1%;
+    min-width: 70%;
+}
+
+.userForm button{
+    color: dodgerblue;
+    border: 1px dodgerblue solid;
+    margin-top: 2%;
+    margin-bottom: 1%;
+    min-width: 20%;
+    align-self: flex-end;
+}

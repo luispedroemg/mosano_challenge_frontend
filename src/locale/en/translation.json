@@ -1,0 +1,9 @@
+{
+  "Current language is": "Current language is",
+  "Name": "Name",
+  "Surname": "Surname",
+  "Country": "Country",
+  "Birthday": "Birthday",
+  "userMessage":"Hello {{name}} from {{country}}. On {{birthDay}} {{birthMonth}} you will have {{ageYears}} years",
+  "Save": "Save"
+}

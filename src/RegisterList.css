@@ -1,0 +1,25 @@
+.registerList{
+    min-width: 50vw;
+    margin-top: 5%;
+}
+
+.registerList table{
+    border: 1px dodgerblue solid;
+    background: white;
+    border-collapse: collapse;
+    min-width: 100%;
+}
+
+.registerList thead{
+    color: dodgerblue;
+}
+
+.registerList td{
+    border-bottom: 1px solid grey;
+    padding-right: 5%;
+    padding-bottom: 2%;
+}
+
+.registerList tr :hover{
+    cursor: pointer;
+}
