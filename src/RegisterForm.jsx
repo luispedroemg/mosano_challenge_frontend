@@ -26,10 +26,8 @@ function RegisterForm(props) {
   function onSubmit() {
     APIClient.postUser(
       currentFormState,
-      (user) => onSubmitCallback(user),
-      (err) => onSubmitErrorCallback(err),
       apiCreds,
-    );
+    ).then((user) => onSubmitCallback(user), (err) => onSubmitErrorCallback(err));
   }
 
   return (

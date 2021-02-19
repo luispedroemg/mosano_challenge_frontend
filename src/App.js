@@ -4,34 +4,44 @@ import APIClient from './api_client/APIClient';
 
 import './App.css';
 import RegisterForm from './RegisterForm';
-import RegisterList from './RegisterList';
 import UserMessage from './UserMessage';
+import RegisterListPaginated from './RegisterListPaginated';
 
-function App() {
+function App(props) {
+  let { userListLimit } = props;
+  if (!userListLimit) userListLimit = 2;
+
   const { t, i18n } = useTranslation();
   const [errors, setErrors] = useState([]);
-
-  const [selectedUser, setSelectedUser] = useState(null);
-
+  const [selectedUser, setSelectedUser] = useState(undefined);
+  const [numUsers, setNumUsers] = useState(0);
+  const [userListPage, setUserListPage] = useState(0);
   const [countryList, setCountryList] = useState([]);
-  useEffect(() => {
-    APIClient.getCountryList((list) => setCountryList(list), (err) => setErrors(err));
-  }, []);
-
   const [registerList, setRegisterList] = useState([]);
+
   useEffect(() => {
-    APIClient.getUserList((list) => setRegisterList(list), (err) => setErrors(err));
+    APIClient.getCountryList().then((list) => setCountryList(list), (err) => setErrors([err]));
   }, []);
 
-  function setuser(user) {
-    console.log(['set user', user]);
-    i18n.changeLanguage(user.country.countryCode.toLowerCase());
-    setSelectedUser(user);
+  useEffect(() => {
+    APIClient.getUserList(userListLimit, userListPage).then((content) => {
+      const { total, users } = content;
+      setRegisterList(users);
+      setNumUsers(total);
+    }, (err) => setErrors([err]));
+  }, [userListPage]);
+
+  function setUser(user) {
+    i18n.changeLanguage(user.country.countryCode.toLowerCase()).then(() => setSelectedUser(user), (err) => setErrors(err));
   }
 
   function onSubmitRegister(userData) {
-    APIClient.getUserList((list) => setRegisterList(list), (err) => setErrors(err));
-    setuser(userData);
+    APIClient.getUserList(userListLimit, 0).then((content) => {
+      const { total, users } = content;
+      setRegisterList(users);
+      setNumUsers(total);
+    }, (err) => setErrors(err));
+    setUser(userData);
     setErrors([]);
   }
 
@@ -51,7 +61,13 @@ function App() {
           {`${t('Current language is')} ${i18n.language}`}
         </div>
       </div>
-      <RegisterList registerList={registerList} onUserSelectCallback={(user) => setuser(user)} />
+      <RegisterListPaginated
+        registerList={registerList}
+        totalUsers={numUsers}
+        selectUser={(user) => setUser(user)}
+        setPage={(pageIdx) => setUserListPage(pageIdx)}
+        userListPage={userListPage}
+      />
     </div>
   );
 }

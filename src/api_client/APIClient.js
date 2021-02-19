@@ -4,46 +4,93 @@ function hasErrors(response) {
   return !(response.status === 200 || response.status === 201);
 }
 
-function handleErrors(response, errorCallback) {
-  if (!hasErrors(response)) throw new Error('No errors to handle but calling error handler.');
-  else response.json().then((errData) => errorCallback(errData));
+async function handleErrors(response) {
+  let err;
+  let errData;
+  if (!hasErrors(response)) err = new Error('No errors to handle but calling error handler.');
+  try {
+    errData = await response.json();
+  } catch (e) { err = e; }
+  return new Promise((resolve, reject) => {
+    if (err) reject(err);
+    reject(errData);
+  });
 }
 
-function getCountryList(responseCallback, errorCallback) {
-  console.log(process.env.REACT_APP_API_URL);
-  fetch(`${process.env.REACT_APP_API_URL}/countries`)
-    .then((response) => {
-      response.json().then((countries) => {
-        responseCallback(countries);
-      }, (err) => errorCallback([{ error: 'frontend', msg: `Error parsing country list json: ${err}` }]));
-    }, (err) => errorCallback([{ error: 'frontend', msg: `Error fetching country list: ${err}` }]));
+async function performCall(endpoint, requestOptions = {}, { username = '', password = '' } = {}) {
+  const options = requestOptions;
+  options.headers = { ...requestOptions.headers, Authorization: `Basic ${base64.encode(`${username}:${password}`)}` };
+  let err;
+  let response;
+  try {
+    response = await fetch(`${process.env.REACT_APP_API_URL}${endpoint}`, options);
+    if (hasErrors(response)) return handleErrors(response);
+  } catch (e) {
+    err = e;
+  }
+  return new Promise((resolve, reject) => {
+    if (err) reject(err);
+    resolve(response);
+  });
 }
 
-function getUserList(responseCallback, errorCallback) {
-  fetch(`${process.env.REACT_APP_API_URL}/users`)
-    .then((usersResponse) => usersResponse.json(), (err) => errorCallback([{ error: 'frontend', msg: `Error fetching country list json:${err}` }]))
-    .then((data) => responseCallback(data), (err) => errorCallback([{ error: 'frontend', msg: `Error fetching country list json:${err}` }]));
+async function getCountryList(limit = 10, page = 0) {
+  let err;
+  let countries;
+  try {
+    const response = await performCall(`/countries?limit=${limit}&page=${page}`);
+    countries = await response.json();
+  } catch (e) {
+    err = e;
+  }
+  return new Promise((resolve, reject) => {
+    if (err) reject(err);
+    resolve(countries);
+  });
 }
 
-function postUser(userData, responseCallback, errorCallback, apiCreds) {
+async function getUserList(limit = 10, page = 0) {
+  let err;
+  let content;
+  try {
+    const response = await performCall(`/users?limit=${limit}&page=${page}`);
+    if (hasErrors(response)) return handleErrors(response);
+    content = await response.json();
+    if (!content) return Promise.reject(new Error('Could not fetch user list'));
+  } catch (e) {
+    err = e;
+  }
+  return new Promise((resolve, reject) => {
+    if (err) reject(err);
+    resolve(content);
+  });
+}
+
+async function postUser(userData, apiCredentials) {
   const requestOptions = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Basic ${base64.encode(`${apiCreds.username}:${apiCreds.password}`)}`,
     },
     body: JSON.stringify(userData),
   };
-  fetch(`${process.env.REACT_APP_API_URL}/users`, requestOptions)
-    .then((response) => {
-      if (hasErrors(response)) {
-        handleErrors(response, errorCallback);
-      } else {
-        response.json().then((user) => {
-          responseCallback(user);
-        }, (err) => errorCallback([{ error: 'frontend', msg: `Error parsing user data json: ${err}` }]));
-      }
-    }, (err) => errorCallback([{ error: 'frontend', msg: `Error fetching user data: ${err}` }]));
+
+  let user;
+  let err;
+  try {
+    const response = await performCall('/users',
+      requestOptions,
+      { username: apiCredentials.username, password: apiCredentials.password });
+    if (hasErrors(response)) return handleErrors(response);
+    user = await response.json();
+  } catch (e) {
+    err = e;
+  }
+
+  return new Promise((resolve, reject) => {
+    if (err) reject(err);
+    resolve(user);
+  });
 }
 
 export default { getCountryList, getUserList, postUser };

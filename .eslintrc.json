@@ -20,6 +20,7 @@
     "rules": {
         "react/prop-types": "off",
         "max-len": "off",
+        "no-unused-vars": "warn",
         "jsx-a11y/label-has-associated-control": ["error", {
             "required": {
                 "some": ["nesting", "id"]

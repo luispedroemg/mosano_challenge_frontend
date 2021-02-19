@@ -5,10 +5,10 @@ import './RegisterList.css';
 
 function RegisterList(props) {
   const { t } = useTranslation();
-  const { registerList, onUserSelectCallback } = props;
+  const { registerList, selectUser } = props;
   const currentListRows = registerList.map((listItem) => (
     // eslint-disable-next-line no-underscore-dangle
-    <tr key={listItem._id} onClick={() => onUserSelectCallback(listItem)}>
+    <tr key={listItem._id} onClick={() => selectUser(listItem)}>
       <td>{`${listItem.name} ${listItem.surname}`}</td>
       <td>{listItem.country.name}</td>
       <td>{new Date(listItem.birthday).toLocaleDateString('pt-PT')}</td>

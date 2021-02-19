@@ -4,6 +4,6 @@
   "Surname": "Apelido",
   "Country": "País",
   "Birthday": "Aniversário",
-  "userMessage":"Olá {{name}} de {{country}}. Em {{birthday}} {{birthMonth}} vais ter {{ageYears}} anos",
+  "userMessage":"Olá {{name}} de {{country}}. Em {{birthDay}} {{birthMonth}} vais ter {{ageYears}} anos",
   "Save": "Guardar"
 }
